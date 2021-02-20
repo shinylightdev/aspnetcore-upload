@@ -1,0 +1,98 @@
+﻿<h1>File upload</h1>
+
+<form method="post" enctype="multipart/form-data" id="file-upload" name="upload">
+  <input type="text" name="firstname" />
+  <input type="file" name="file" id="File1" />
+
+  @* Very important: use the type="button" param so that the form doesn't submit when
+    you press it.*@
+  <button id="btn-upload" type="button">Upload</button>
+</form>
+
+
+@*<div class="progress">
+    <div class="progress-bar progress-bar-striped progress-bar-animated"
+         role="progressbar"
+         aria-valuenow="0"
+         aria-valuemin="0"
+         aria-valuemax="100"
+         style="width: 0%"
+         id="file-progress-1">
+    </div>
+  </div>*@
+
+<hr />
+
+@*Styling Progress Bars: https://getbootstrap.com/docs/4.0/components/progress/*@
+<div class="progress" style="height: 2px; width: 20%">
+  <div class="progress-bar progress-bar-striped progress-bar-animated"
+       role="progressbar"
+       aria-valuenow="0"
+       aria-valuemin="0"
+       aria-valuemax="100"
+       style="width: 0%"
+       id="file-progress-1">
+  </div>
+</div>
+
+
+
+<script>
+
+  $(function () {
+
+    $('#btn-upload').click(function (e) {
+
+      var fileInput = document.getElementById('File1');
+      var file = fileInput.files[0];
+      var formData = new FormData();
+      formData.append('file', file);
+
+      $.ajax({
+
+        xhr: function () {
+          let xhr = new window.XMLHttpRequest();
+          //Upload progress
+          xhr.upload.addEventListener("progress", function (evt) {
+            if (evt.lengthComputable) {
+              let percentProgress = Math.round(evt.loaded / evt.total * 100);
+              $("#file-progress-1").attr("style", `width: ${percentProgress}%`);
+              $("#file-progress-1").attr("aria-valuenow", `${percentProgress}`);
+            }
+          }, false);
+          return xhr;
+        },
+
+        url: "/Home/Upload/",
+        type: 'POST',
+        data: formData,
+
+        // Pass in DOM object, NOT url encoded string
+        processData: false,  
+        contentType: false,
+
+        // No caching
+        cache: false, 
+
+        // What will be returned
+        dataType: 'json', 
+
+        success: function (result) {
+          if (result.status === "SUCCESS") {
+            // Reset back to 0.
+            $("#file-progress-1").attr("style", "width: 0%");
+            alert("Upload completed.");
+          }
+          else {
+            alert(result.Message);
+          }
+        },
+
+        error: function (e) {
+          console.log("Uncaught error.");
+          console.log(e);
+        }
+      });
+    });
+  });
+</script>
