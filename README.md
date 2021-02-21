@@ -1,4 +1,4 @@
-# Upload with Progress Bar
+## Upload with Progress Bar
 
 Sample project that shows you how to upload a file using a progress bar in ASP.NET Core in .NET 5. It uses JavaScript to trigger the upload.
 
